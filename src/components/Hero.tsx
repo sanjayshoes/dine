@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { Calendar, Utensils, Star, Sparkles, ChevronDown, Award, Flame } from 'lucide-react';
 import { heroBg } from '../data/restaurantData';
 
@@ -8,6 +8,45 @@ interface HeroProps {
 }
 
 export const Hero: React.FC<HeroProps> = ({ onReserveClick, onExploreMenuClick }) => {
+  const line1 = 'DINE IN THE';
+  const line2 = 'FUTURE OF FLAVOR';
+  const totalChars = line1.length + line2.length;
+
+  const [charCount, setCharCount] = useState(0);
+  const [isDeleting, setIsDeleting] = useState(false);
+
+  useEffect(() => {
+    let timer: ReturnType<typeof setTimeout>;
+
+    if (!isDeleting && charCount < totalChars) {
+      // Type next character
+      timer = setTimeout(() => {
+        setCharCount((prev) => prev + 1);
+      }, 85);
+    } else if (!isDeleting && charCount === totalChars) {
+      // Pause at full text
+      timer = setTimeout(() => {
+        setIsDeleting(true);
+      }, 2000);
+    } else if (isDeleting && charCount > 0) {
+      // Delete characters
+      timer = setTimeout(() => {
+        setCharCount((prev) => prev - 1);
+      }, 40);
+    } else if (isDeleting && charCount === 0) {
+      // Pause at empty before restarting loop
+      timer = setTimeout(() => {
+        setIsDeleting(false);
+      }, 500);
+    }
+
+    return () => clearTimeout(timer);
+  }, [charCount, isDeleting, totalChars]);
+
+  const text1 = line1.slice(0, Math.min(charCount, line1.length));
+  const text2 = charCount > line1.length ? line2.slice(0, charCount - line1.length) : '';
+  const isCursorOnLine1 = charCount <= line1.length;
+
   return (
     <section
       id="hero"
@@ -39,11 +78,19 @@ export const Hero: React.FC<HeroProps> = ({ onReserveClick, onExploreMenuClick }
           <span className="inline-block w-1.5 h-1.5 rounded-full bg-cyan-400 animate-ping" />
         </div>
 
-        {/* Hero Title */}
-        <h1 className="font-orbitron text-4xl sm:text-6xl md:text-7xl lg:text-8xl font-black tracking-tight leading-none text-white">
-          DINE IN THE <br className="hidden sm:inline" />
-          <span className="text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 via-sky-300 to-teal-200 neon-text-cyan">
-            FUTURE OF FLAVOR
+        {/* Hero Title with Infinite Typewriter Effect */}
+        <h1 className="font-orbitron text-4xl sm:text-6xl md:text-7xl lg:text-8xl font-black tracking-tight leading-none text-white min-h-[2.4em] sm:min-h-[2.1em] flex flex-col items-center justify-center">
+          <span className="inline-block">
+            {text1}
+            {isCursorOnLine1 && (
+              <span className="inline-block w-[3px] sm:w-[5px] md:w-[7px] h-[0.75em] align-middle bg-cyan-400 ml-1.5 shadow-[0_0_12px_#38bdf8] animate-pulse" />
+            )}
+          </span>
+          <span className="text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 via-sky-300 to-teal-200 neon-text-cyan inline-block">
+            {text2}
+            {!isCursorOnLine1 && (
+              <span className="inline-block w-[3px] sm:w-[5px] md:w-[7px] h-[0.75em] align-middle bg-cyan-400 ml-1.5 shadow-[0_0_12px_#38bdf8] animate-pulse" />
+            )}
           </span>
         </h1>
 
