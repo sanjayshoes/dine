@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { Rocket, Sparkles, Menu as MenuIcon, X, Calendar, Utensils } from 'lucide-react';
+import { Sparkles, Menu as MenuIcon, X, Calendar, Utensils } from 'lucide-react';
+import { BRAND_LOGO_URL } from '../data/restaurantData';
 
 interface NavbarProps {
   onReserveClick: () => void;
@@ -40,9 +41,14 @@ export const Navbar: React.FC<NavbarProps> = ({ onReserveClick }) => {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex items-center justify-between">
         {/* Brand Logo */}
         <a href="#hero" className="flex items-center gap-3 group">
-          <div className="w-10 h-10 rounded-xl bg-gradient-to-tr from-cyan-500 to-sky-300 p-[1px] shadow-[0_0_15px_rgba(56,189,248,0.5)] group-hover:shadow-[0_0_25px_rgba(56,189,248,0.8)] transition-all">
-            <div className="w-full h-full bg-[#0b0d15] rounded-[11px] flex items-center justify-center">
-              <Rocket className="w-5 h-5 text-cyan-400 group-hover:rotate-12 transition-transform duration-300" />
+          <div className="w-10 h-10 rounded-xl overflow-hidden bg-gradient-to-tr from-cyan-500 to-sky-300 p-[1.5px] shadow-[0_0_15px_rgba(56,189,248,0.5)] group-hover:shadow-[0_0_25px_rgba(56,189,248,0.85)] transition-all">
+            <div className="w-full h-full bg-[#0b0d15] rounded-[10px] overflow-hidden flex items-center justify-center">
+              <img
+                src={BRAND_LOGO_URL}
+                alt="NEBULA Logo"
+                className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
+                referrerPolicy="no-referrer"
+              />
             </div>
           </div>
           <div>

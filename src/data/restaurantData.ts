@@ -8,6 +8,8 @@ import zeroGravityCocktailImg from '../assets/images/zero_gravity_cocktail_17866
 
 export { heroBg };
 
+export const BRAND_LOGO_URL = "https://i.ibb.co/xtfQMV9j/Chat-GPT-Image-Aug-14-2026-10-41-16-AM.png";
+
 export const CONTACT_INFO: ContactInfo = {
   address: "221B Neon Street, Neo-Tokyo",
   hours: "Daily · 18:00 – 02:00",

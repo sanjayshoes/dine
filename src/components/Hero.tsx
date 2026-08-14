@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Calendar, Utensils, Star, Sparkles, ChevronDown, Award, Flame } from 'lucide-react';
 import { heroBg } from '../data/restaurantData';
+import { HeroStarfield } from './HeroStarfield';
 
 interface HeroProps {
   onReserveClick: () => void;
@@ -63,6 +64,9 @@ export const Hero: React.FC<HeroProps> = ({ onReserveClick, onExploreMenuClick }
         <div className="absolute inset-0 bg-gradient-to-t from-[#0b0d15] via-[#0b0d15]/80 to-transparent" />
         <div className="absolute inset-0 bg-gradient-to-r from-[#0b0d15] via-transparent to-[#0b0d15]" />
         
+        {/* Interactive Subtle Canvas Starfield / Particle Background */}
+        <HeroStarfield />
+
         {/* Neon Ambient Glow Orbs */}
         <div className="absolute top-1/4 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[500px] bg-cyan-500/15 rounded-full filter blur-[120px] pointer-events-none" />
         <div className="absolute bottom-10 right-10 w-[350px] h-[350px] bg-sky-400/10 rounded-full filter blur-[100px] pointer-events-none" />

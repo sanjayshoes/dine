@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
-import { Rocket, Heart, ArrowRight, Sparkles, Shield, CheckCircle2 } from 'lucide-react';
+import { Heart, ArrowRight, Sparkles, Shield, CheckCircle2 } from 'lucide-react';
+import { BRAND_LOGO_URL } from '../data/restaurantData';
 
 export const Footer: React.FC = () => {
   const [email, setEmail] = useState('');
@@ -27,9 +28,14 @@ export const Footer: React.FC = () => {
           {/* Brand Info (5 cols) */}
           <div className="md:col-span-5 space-y-4">
             <a href="#hero" className="flex items-center gap-3 group inline-flex">
-              <div className="w-10 h-10 rounded-xl bg-gradient-to-tr from-cyan-500 to-sky-300 p-[1px] shadow-[0_0_15px_rgba(56,189,248,0.5)]">
-                <div className="w-full h-full bg-[#0b0d15] rounded-[11px] flex items-center justify-center">
-                  <Rocket className="w-5 h-5 text-cyan-400" />
+              <div className="w-10 h-10 rounded-xl overflow-hidden bg-gradient-to-tr from-cyan-500 to-sky-300 p-[1.5px] shadow-[0_0_15px_rgba(56,189,248,0.5)] group-hover:shadow-[0_0_25px_rgba(56,189,248,0.85)] transition-all">
+                <div className="w-full h-full bg-[#0b0d15] rounded-[10px] overflow-hidden flex items-center justify-center">
+                  <img
+                    src={BRAND_LOGO_URL}
+                    alt="NEBULA Logo"
+                    className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
+                    referrerPolicy="no-referrer"
+                  />
                 </div>
               </div>
               <span className="font-orbitron text-2xl font-extrabold tracking-widest text-transparent bg-clip-text bg-gradient-to-r from-white via-cyan-200 to-cyan-400 neon-text-cyan">
