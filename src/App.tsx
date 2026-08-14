@@ -1,68 +1,228 @@
-import React, { useState } from 'react';
-import { Navbar } from './components/Navbar';
-import { Hero } from './components/Hero';
-import { MenuSection } from './components/MenuSection';
-import { ExperienceSection } from './components/ExperienceSection';
-import { ReservationSection } from './components/ReservationSection';
-import { Footer } from './components/Footer';
-import { Dish } from './types';
+import React, { useState, useEffect } from 'react';
+import { CartProvider } from './context/CartContext';
+import { FavoritesProvider } from './context/FavoritesContext';
+import { OrderHistoryProvider } from './context/OrderHistoryContext';
+import { Navbar } from './components/common/Navbar';
+import { Footer } from './components/common/Footer';
+import { DishModal } from './components/common/DishModal';
+import { CartDrawer } from './components/common/CartDrawer';
+import { GlobalSearchModal } from './components/common/GlobalSearchModal';
 
-export default function App() {
-  const [preOrderedDishes, setPreOrderedDishes] = useState<Dish[]>([]);
+// Pages
+import { HomePage } from './pages/HomePage';
+import { MenuPage } from './pages/MenuPage';
+import { DishDetailPage } from './pages/DishDetailPage';
+import { CartPage } from './pages/CartPage';
+import { CheckoutPage } from './pages/CheckoutPage';
+import { OrderSuccessPage } from './pages/OrderSuccessPage';
+import { AboutPage } from './pages/AboutPage';
+import { GalleryPage } from './pages/GalleryPage';
+import { ReservationPage } from './pages/ReservationPage';
+import { ContactPage } from './pages/ContactPage';
+import { FAQPage } from './pages/FAQPage';
+import { FavoritesPage } from './pages/FavoritesPage';
+import { LegalPage } from './pages/LegalPage';
+import { NotFoundPage } from './pages/NotFoundPage';
 
-  const handlePreOrderDish = (dish: Dish) => {
-    setPreOrderedDishes((prev) => {
-      const exists = prev.some((d) => d.id === dish.id);
-      if (exists) {
-        return prev.filter((d) => d.id !== dish.id);
-      }
-      return [...prev, dish];
-    });
-  };
+import { Dish, DishCategory, Order } from './types';
 
-  const handleRemovePreOrderedDish = (dishId: string) => {
-    setPreOrderedDishes((prev) => prev.filter((d) => d.id !== dishId));
-  };
+export function App() {
+  const [currentRoute, setCurrentRoute] = useState<string>('/');
+  const [selectedDishForModal, setSelectedDishForModal] = useState<Dish | null>(null);
+  const [isSearchOpen, setIsSearchOpen] = useState(false);
+  const [activeCategory, setActiveCategory] = useState<DishCategory | 'all'>('all');
+  const [lastPlacedOrder, setLastPlacedOrder] = useState<Order | null>(null);
 
-  const scrollToSection = (id: string) => {
-    const el = document.getElementById(id);
-    if (el) {
-      el.scrollIntoView({ behavior: 'smooth' });
+  // Sync route with browser hash / history if needed
+  useEffect(() => {
+    const handlePopState = () => {
+      const path = window.location.hash ? window.location.hash.replace('#', '') : '/';
+      setCurrentRoute(path || '/');
+    };
+
+    window.addEventListener('popstate', handlePopState);
+    if (window.location.hash) {
+      handlePopState();
     }
+    return () => window.removeEventListener('popstate', handlePopState);
+  }, []);
+
+  const navigate = (route: string) => {
+    setCurrentRoute(route);
+    window.location.hash = route;
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
+  const handleOpenDishDetails = (dish: Dish) => {
+    setSelectedDishForModal(dish);
+  };
+
+  const handleSelectCategory = (categoryId: DishCategory) => {
+    setActiveCategory(categoryId);
+  };
+
+  const handleOrderCompleted = (order: Order) => {
+    setLastPlacedOrder(order);
+    navigate(`/order-success/${order.orderNumber}`);
+  };
+
+  // Router renderer
+  const renderCurrentPage = () => {
+    if (currentRoute === '/') {
+      return (
+        <HomePage
+          onNavigate={navigate}
+          onSelectCategory={handleSelectCategory}
+          onOpenDishDetails={handleOpenDishDetails}
+        />
+      );
+    }
+
+    if (currentRoute === '/menu' || currentRoute.startsWith('/menu/category/')) {
+      const categoryFromUrl = currentRoute.startsWith('/menu/category/')
+        ? (currentRoute.replace('/menu/category/', '') as DishCategory)
+        : activeCategory;
+      return (
+        <MenuPage
+          initialCategory={categoryFromUrl}
+          onOpenDishDetails={handleOpenDishDetails}
+        />
+      );
+    }
+
+    if (currentRoute.startsWith('/menu/') && !currentRoute.startsWith('/menu/category/')) {
+      const segment = currentRoute.replace('/menu/', '');
+      // Check if it's a category like /menu/rice-meals or a dish
+      const knownCategories: string[] = [
+        'rice-meals', 'african-specials', 'grills-bbq', 'soups-swallow', 
+        'small-chops', 'pastries-bakes', 'drinks-elixirs', 'sweet-desserts'
+      ];
+      if (knownCategories.includes(segment)) {
+        return (
+          <MenuPage
+            initialCategory={segment as DishCategory}
+            onOpenDishDetails={handleOpenDishDetails}
+          />
+        );
+      } else {
+        // Individual item detail route
+        return (
+          <DishDetailPage
+            dishSlug={segment}
+            onNavigate={navigate}
+            onOpenDishDetails={handleOpenDishDetails}
+          />
+        );
+      }
+    }
+
+    if (currentRoute === '/about') {
+      return <AboutPage onNavigate={navigate} />;
+    }
+
+    if (currentRoute === '/gallery') {
+      return <GalleryPage onNavigate={navigate} />;
+    }
+
+    if (currentRoute === '/reservation') {
+      return <ReservationPage onNavigate={navigate} />;
+    }
+
+    if (currentRoute === '/contact') {
+      return <ContactPage onNavigate={navigate} />;
+    }
+
+    if (currentRoute === '/faq') {
+      return <FAQPage onNavigate={navigate} />;
+    }
+
+    if (currentRoute === '/cart') {
+      return <CartPage onNavigate={navigate} />;
+    }
+
+    if (currentRoute === '/checkout') {
+      return (
+        <CheckoutPage
+          onNavigate={navigate}
+          onOrderCompleted={handleOrderCompleted}
+        />
+      );
+    }
+
+    if (currentRoute.startsWith('/order-success')) {
+      return (
+        <OrderSuccessPage
+          order={lastPlacedOrder}
+          onNavigate={navigate}
+        />
+      );
+    }
+
+    if (currentRoute === '/favorites') {
+      return (
+        <FavoritesPage
+          onNavigate={navigate}
+          onOpenDishDetails={handleOpenDishDetails}
+        />
+      );
+    }
+
+    if (currentRoute === '/privacy') {
+      return <LegalPage initialTab="privacy" onNavigate={navigate} />;
+    }
+
+    if (currentRoute === '/terms') {
+      return <LegalPage initialTab="terms" onNavigate={navigate} />;
+    }
+
+    return <NotFoundPage onNavigate={navigate} />;
   };
 
   return (
-    <div className="min-h-screen bg-[#0b0d15] text-slate-100 font-['Inter',sans-serif] selection:bg-cyan-500 selection:text-black relative overflow-x-hidden">
-      
-      {/* Top Navbar */}
-      <Navbar onReserveClick={() => scrollToSection('reserve')} />
+    <CartProvider>
+      <FavoritesProvider>
+        <OrderHistoryProvider>
+          <div className="min-h-screen bg-[#050505] text-white flex flex-col font-sans-body selection:bg-[#D4A72C] selection:text-black">
+            
+            {/* Global Navbar */}
+            <Navbar
+              currentRoute={currentRoute}
+              onNavigate={navigate}
+              onOpenSearch={() => setIsSearchOpen(true)}
+            />
 
-      {/* Main Sections */}
-      <main>
-        {/* 1. Hero Section */}
-        <Hero
-          onReserveClick={() => scrollToSection('reserve')}
-          onExploreMenuClick={() => scrollToSection('menu')}
-        />
+            {/* Main Content Area */}
+            <main className="flex-1">
+              {renderCurrentPage()}
+            </main>
 
-        {/* 2. Menu Section */}
-        <MenuSection
-          onPreOrderDish={handlePreOrderDish}
-          preOrderedDishIds={preOrderedDishes.map((d) => d.id)}
-        />
+            {/* Global Footer */}
+            <Footer onNavigate={navigate} />
 
-        {/* 3. Experience & Pod Customizer Section */}
-        <ExperienceSection />
+            {/* Dish Quick-View & Customization Modal */}
+            <DishModal
+              dish={selectedDishForModal}
+              onClose={() => setSelectedDishForModal(null)}
+              onNavigate={navigate}
+            />
 
-        {/* 4. Contact / Reservation Split Section */}
-        <ReservationSection
-          preOrderedDishes={preOrderedDishes}
-          onRemovePreOrderedDish={handleRemovePreOrderedDish}
-        />
-      </main>
+            {/* Global Slide-Over Cart Drawer */}
+            <CartDrawer onNavigate={navigate} />
 
-      {/* 5. Footer */}
-      <Footer />
-    </div>
+            {/* Global Instant Search Modal */}
+            <GlobalSearchModal
+              isOpen={isSearchOpen}
+              onClose={() => setIsSearchOpen(false)}
+              onSelectDish={(dish) => {
+                setSelectedDishForModal(dish);
+              }}
+            />
+
+          </div>
+        </OrderHistoryProvider>
+      </FavoritesProvider>
+    </CartProvider>
   );
 }
+
+export default App;

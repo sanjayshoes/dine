@@ -1,6 +1,6 @@
 {
-  "name": "NEBULA Futuristic Restaurant",
-  "description": "A single-page futuristic cyberpunk restaurant website with glowing neon accents, interactive reservation system, molecular gastronomy menu, and immersive soundscapes/animations.",
+  "name": "SAVANNA BITES - African Restaurant",
+  "description": "Taste the Heart of Africa. Premium modern African restaurant featuring authentic flavors, artisanal grills, jollof delicacies, traditional soups, online food ordering, table reservations, and seamless WhatsApp ordering.",
   "requestFramePermissions": [],
   "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
 }
