@@ -1,0 +1,6 @@
+{
+  "name": "NEBULA Futuristic Restaurant",
+  "description": "A single-page futuristic cyberpunk restaurant website with glowing neon accents, interactive reservation system, molecular gastronomy menu, and immersive soundscapes/animations.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
